@@ -1,56 +1,27 @@
-import { createParamDecorator, ExecutionContext, InjectionToken, InternalServerErrorException } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, InternalServerErrorException } from '@nestjs/common';
+import type { InjectionToken } from '@nestjs/common/interfaces';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import DataLoader from 'dataloader';
 import { GQL_CONTEXT_KEY } from '../constants';
-import { DataloaderInterceptor } from '../interceptors/dataloader.interceptor';
-import { DataloaderMap } from '../services/dataloader-discovery.service';
 import { DataloaderProvider } from './dataloader-provider.decorator';
 
-/**
- * Stringifies a NestJS `InstanceToken`.
- */
-const tokenToString = (token: InjectionToken): string => {
-  if (typeof token === 'string') {
-    return token;
-  } else if (typeof token === 'symbol') {
-    return String(token);
-  } else {
-    return token.name;
-  }
-};
+const toStr = (t: InjectionToken) => (typeof t === 'string' ? t : typeof t === 'symbol' ? String(t) : t.name);
 
-/**
- * @see `Loader`
- */
-export const loaderDecoratorFactory = async (
-  token: InjectionToken,
-  context: ExecutionContext,
-): Promise<DataLoader<any, any, any>> => {
-  // Get the dataloader map from the GraphQL context object
-  const gqlContext: any = GqlExecutionContext.create(context).getContext();
-  const dataloaders: DataloaderMap | undefined = gqlContext[GQL_CONTEXT_KEY];
-  if (!dataloaders) {
-    throw new InternalServerErrorException(
-      `No dataloaders found in GraphQL context object. Did you forget to provide the ${DataloaderInterceptor.name}?`,
-    );
-  }
+export const Loader = createParamDecorator(
+  async (token: InjectionToken, ctx: ExecutionContext): Promise<DataLoader<any, any>> => {
+    const gqlCtx = GqlExecutionContext.create(ctx).getContext();
+    const map = gqlCtx[GQL_CONTEXT_KEY] as Map<InjectionToken, DataLoader<any, any>>;
 
-  // Get the dataloader instance from the map
-  const dataloader = dataloaders.get(token);
-  if (!dataloader) {
-    throw new InternalServerErrorException(
-      `No dataloader found for ${tokenToString(token)}. Did you forget to decorate it with @${
-        DataloaderProvider.name
-      }()?`,
-    );
-  }
+    if (!map) {
+      throw new InternalServerErrorException('Dataloaders map missing in GraphQL context');
+    }
 
-  return dataloader;
-};
-
-/**
- * Parameter decorator that injects a `DataLoader` instance from the GraphQL context.
- * If the token does not match any available class decorated with `@DataloaderProvider()`,
- * an `InternalServerErrorException` is thrown.
- */
-export const Loader = createParamDecorator(loaderDecoratorFactory);
+    const dl = map.get(token);
+    if (!dl) {
+      throw new InternalServerErrorException(
+        `DataLoader ${toStr(token)} not found. Did you add @${DataloaderProvider.name}()?`,
+      );
+    }
+    return dl;
+  },
+);

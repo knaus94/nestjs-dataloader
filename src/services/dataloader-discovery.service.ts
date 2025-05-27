@@ -1,40 +1,36 @@
-import { Injectable, InternalServerErrorException, OnModuleInit, InjectionToken } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
+import type { InjectionToken } from '@nestjs/common/interfaces';
 import { DiscoveryService } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import DataLoader from 'dataloader';
 import { METADATA_KEY } from '../constants';
 import { DataloaderFactory } from '../interfaces/dataloader-factory.interface';
 
-/**
- * Maps dataloader provider tokens to dataloader instances.
- */
-export type DataloaderMap = Map<InjectionToken, DataLoader<any, any, any>>;
+export type DataloaderMap = Map<InjectionToken, DataLoader<any, any>>;
 
-/**
- * Service that dynamically discovers providers decorated with `@DataloaderProvider()`
- * and acts as a factory for new dataloader instances.
- */
 @Injectable()
 export class DataloaderDiscoveryService implements OnModuleInit {
-  private providers?: InstanceWrapper<DataloaderFactory<any, any, any>>[];
+  private providers?: InstanceWrapper<DataloaderFactory>[];
 
   constructor(private readonly discovery: DiscoveryService) {}
 
   onModuleInit() {
-    this.providers = this.discoverDataloaders();
-  }
-
-  discoverDataloaders(): InstanceWrapper<DataloaderFactory>[] {
-    return this.discovery
+    this.providers = this.discovery
       .getProviders()
-      .filter((provider) => provider.metatype && Reflect.getMetadata(METADATA_KEY, provider.metatype));
+      .filter(
+        (p) => p.metatype && Reflect.getMetadata(METADATA_KEY, p.metatype),
+      ) as InstanceWrapper<DataloaderFactory>[];
   }
 
-  createDataloaderMap(ctx: GqlExecutionContext): DataloaderMap {
+  createDataloaderMap(graphqlCtx: Record<string, any>): DataloaderMap {
     if (!this.providers) {
-      throw new InternalServerErrorException(`discoverDataloaders() must be called before createDataloaderMap(...)`);
+      throw new InternalServerErrorException('DataloaderDiscoveryService is not initialised');
     }
-    return new Map(this.providers.map((factory) => [factory.token, factory.instance.createDataloader(ctx)]));
+    return new Map(
+      this.providers.map((p) => [
+        p.token,
+        p.instance.createDataloader(graphqlCtx),
+      ]),
+    );
   }
 }

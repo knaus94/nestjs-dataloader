@@ -1,14 +1,9 @@
-import { GqlExecutionContext } from '@nestjs/graphql';
 import DataLoader from 'dataloader';
 
 /**
- * Interface for a dataloader factory provider.
- * All providers decorated with `@DataloaderProvider` must implement this interface.
+ * Фабрика должна вернуть DataLoader.
+ * В аргументе — обычный GraphQL-context (тот же, что приходит в резолверы).
  */
-export interface DataloaderFactory<K = unknown, V = unknown, C = K> {
-  /**
-   * Factory method that builds a new dataloader instance.
-   * @param ctx - the GraphQL execution context
-   */
-  createDataloader(ctx: GqlExecutionContext): DataLoader<K, V, C>;
+export interface DataloaderFactory<K = unknown, V = unknown> {
+  createDataloader(graphqlCtx: Record<string, any>): DataLoader<K, V>;
 }
