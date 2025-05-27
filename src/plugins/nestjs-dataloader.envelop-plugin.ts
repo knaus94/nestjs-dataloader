@@ -1,20 +1,29 @@
 import { Plugin } from '@envelop/types';
-import { DataloaderDiscoveryService } from '../services/dataloader-discovery.service';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { INestApplicationContext } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { DataloaderDiscoveryService } from '../services/dataloader-discovery.service';
 
-type NestContext = { req: any };
+type BaseCtx = { req?: any; request?: any };
 
-export const useNestjsDataloader = (appContext: INestApplicationContext): Plugin<NestContext & { loaders?: any }> => {
-  const discoveryService = appContext.get(DataloaderDiscoveryService);
+export const useNestjsDataloader = (app: INestApplicationContext): Plugin<BaseCtx & { loaders?: Map<any, any> }> => {
+  const discovery = app.get(DataloaderDiscoveryService);
 
   return {
     onContextBuilding({ context, extendContext }) {
+      const req = (context as any).req ?? (context as any).request;
+      if (!req) {
+        throw new Error(
+          'Cannot locate HTTP request on GraphQL context. ' +
+            'Make sure you pass { req } (Apollo) or { request } (Yoga) when forming the context.',
+        );
+      }
+
+      // Формируем GqlExecutionContext, чтобы re-useʼнуть уже готовую логику discovery
       const gqlCtx = GqlExecutionContext.create({
-        getContext: () => context,
+        getContext: () => ({ req }),
       } as any);
 
-      const loaders = discoveryService.createDataloaderMap(gqlCtx);
+      const loaders = discovery.createDataloaderMap(gqlCtx);
       extendContext({ loaders });
     },
   };

@@ -1,5 +1,4 @@
-import { createParamDecorator, ExecutionContext, InternalServerErrorException } from '@nestjs/common';
-import { InstanceToken } from '@nestjs/core/injector/module';
+import { createParamDecorator, ExecutionContext, InjectionToken, InternalServerErrorException } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import DataLoader from 'dataloader';
 import { GQL_CONTEXT_KEY } from '../constants';
@@ -10,7 +9,7 @@ import { DataloaderProvider } from './dataloader-provider.decorator';
 /**
  * Stringifies a NestJS `InstanceToken`.
  */
-const tokenToString = (token: InstanceToken): string => {
+const tokenToString = (token: InjectionToken): string => {
   if (typeof token === 'string') {
     return token;
   } else if (typeof token === 'symbol') {
@@ -24,7 +23,7 @@ const tokenToString = (token: InstanceToken): string => {
  * @see `Loader`
  */
 export const loaderDecoratorFactory = async (
-  token: InstanceToken,
+  token: InjectionToken,
   context: ExecutionContext,
 ): Promise<DataLoader<any, any, any>> => {
   // Get the dataloader map from the GraphQL context object
