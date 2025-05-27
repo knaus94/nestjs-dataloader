@@ -1,14 +1,14 @@
 # GraphQL Dataloaders for NestJS
 
-[![NPM Version](https://img.shields.io/npm/v/@tracworx/nestjs-dataloader.svg)](https://www.npmjs.com/package/@tracworx/nestjs-dataloader)
-[![Package License](https://img.shields.io/npm/l/@tracworx/nestjs-dataloader.svg)](https://www.npmjs.com/package/@tracworx/nestjs-dataloader)
-![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/@tracworx/nestjs-dataloader)
-[![NPM Downloads](https://img.shields.io/npm/dm/@tracworx/nestjs-dataloader.svg)](https://www.npmjs.com/package/@tracworx/nestjs-dataloader)
-[![Lint Code Base](https://github.com/tracworx/nestjs-dataloader/actions/workflows/super-linter.yml/badge.svg)](https://github.com/tracworx/nestjs-dataloader/actions/workflows/super-linter.yml)
-[![Node.js CI](https://github.com/tracworx/nestjs-dataloader/actions/workflows/ci.yml/badge.svg)](https://github.com/tracworx/nestjs-dataloader/actions/workflows/ci.yml)
-[![Node.js Package](https://github.com/tracworx/nestjs-dataloader/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/tracworx/nestjs-dataloader/actions/workflows/npm-publish.yml)
-[![Maintainability](https://img.shields.io/codeclimate/maintainability/tracworx/nestjs-dataloader)](https://codeclimate.com/github/tracworx/nestjs-dataloader/maintainability)
-[![Test Coverage](https://img.shields.io/codeclimate/coverage/tracworx/nestjs-dataloader)](https://codeclimate.com/github/tracworx/nestjs-dataloader/test_coverage)
+[![NPM Version](https://img.shields.io/npm/v/@dessly/nestjs-dataloader.svg)](https://www.npmjs.com/package/@dessly/nestjs-dataloader)
+[![Package License](https://img.shields.io/npm/l/@dessly/nestjs-dataloader.svg)](https://www.npmjs.com/package/@dessly/nestjs-dataloader)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/@dessly/nestjs-dataloader)
+[![NPM Downloads](https://img.shields.io/npm/dm/@dessly/nestjs-dataloader.svg)](https://www.npmjs.com/package/@dessly/nestjs-dataloader)
+[![Lint Code Base](https://github.com/dessly/nestjs-dataloader/actions/workflows/super-linter.yml/badge.svg)](https://github.com/dessly/nestjs-dataloader/actions/workflows/super-linter.yml)
+[![Node.js CI](https://github.com/dessly/nestjs-dataloader/actions/workflows/ci.yml/badge.svg)](https://github.com/dessly/nestjs-dataloader/actions/workflows/ci.yml)
+[![Node.js Package](https://github.com/dessly/nestjs-dataloader/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/dessly/nestjs-dataloader/actions/workflows/npm-publish.yml)
+[![Maintainability](https://img.shields.io/codeclimate/maintainability/dessly/nestjs-dataloader)](https://codeclimate.com/github/dessly/nestjs-dataloader/maintainability)
+[![Test Coverage](https://img.shields.io/codeclimate/coverage/dessly/nestjs-dataloader)](https://codeclimate.com/github/dessly/nestjs-dataloader/test_coverage)
 [![Twitter](https://img.shields.io/twitter/follow/realEoinOBrien.svg?style=social&label=Follow)](https://twitter.com/realEoinOBrien)
 
 ## Description
@@ -18,7 +18,7 @@ Quick and easy GraphQL [dataloaders](https://github.com/graphql/dataloader) for 
 ## Installation
 
 ```bash
-$ npm install @tracworx/nestjs-dataloader
+$ npm install @dessly/nestjs-dataloader
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ Import the `DataloaderModule` in your root module.
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { DataloaderModule } from '@tracworx/nestjs-dataloader';
+import { DataloaderModule } from '@dessly/nestjs-dataloader';
 import { ItemResolver } from './item.resolver';
 import { ItemLoader } from './item.loader';
 
@@ -42,7 +42,7 @@ Decorate dataloader factory classes with `@DataloaderProvider()` to automaticall
 
 ```typescript
 import DataLoader from 'dataloader';
-import { DataloaderProvider } from '@tracworx/nestjs-dataloader';
+import { DataloaderProvider } from '@dessly/nestjs-dataloader';
 
 @DataloaderProvider()
 class ItemLoader {
@@ -59,7 +59,7 @@ Use `@Loader(...)` to inject a dataloader instance into your resolver methods.
 
 ```typescript
 import DataLoader from 'dataloader';
-import { Loader } from '@tracworx/nestjs-dataloader';
+import { Loader } from '@dessly/nestjs-dataloader';
 import { ItemLoader } from './item.loader';
 
 @Resolver()
@@ -107,4 +107,4 @@ $ npm run test:cov
 
 ## License
 
-`@tracworx/nestjs-dataloader` is [MIT licensed](LICENSE).
+`@dessly/nestjs-dataloader` is [MIT licensed](LICENSE).

@@ -1,5 +1,5 @@
 {
-  "name": "@tracworx/nestjs-dataloader",
+  "name": "@dessly/nestjs-dataloader",
   "version": "1.2.1",
   "description": "Quick and easy GraphQL dataloaders for NestJS",
   "keywords": [
@@ -11,15 +11,10 @@
     "loader",
     "batch"
   ],
-  "homepage": "https://github.com/tracworx/nestjs-dataloader#readme",
+  "homepage": "https://github.com/knaus94/nestjs-dataloader#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tracworx/nestjs-dataloader.git"
-  },
-  "author": {
-    "name": "Eoin O'Brien",
-    "email": "eoin@tracworx.ai",
-    "url": "https://tracworx.ai/"
+    "url": "https://github.com/knaus94/nestjs-dataloader.git"
   },
   "license": "MIT",
   "main": "dist/index.js",
