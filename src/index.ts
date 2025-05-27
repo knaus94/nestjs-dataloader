@@ -4,3 +4,4 @@ export * from './decorators/loader.decorator';
 export * from './interceptors/dataloader.interceptor';
 export * from './interfaces/dataloader-factory.interface';
 export * from './services/dataloader-discovery.service';
+export * from './plugins/nestjs-dataloader.envelop-plugin';
