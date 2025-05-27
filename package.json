@@ -1,6 +1,6 @@
 {
   "name": "@dessly/nestjs-dataloader",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "Quick and easy GraphQL Yoga DataLoaders for NestJS 11+",
   "keywords": [
     "nest",

@@ -13,7 +13,7 @@ npm i @dessly/nestjs-dataloader
 
 # 1. Connect the module
 
-```bash
+```typescript
 // core.module.ts
 import { Module } from '@nestjs/common';
 import {
@@ -50,7 +50,7 @@ export class CoreModule {}
 
 # 2. Define DataLoader
 
-```bash
+```typescript
 // author.loader.ts
 import DataLoader from 'dataloader';
 import { DataloaderProvider } from '@dessly/nestjs-dataloader';
@@ -74,7 +74,7 @@ export class AuthorLoader {
 
 # 3. Use in resolver
 
-```bash
+```typescript
 // book.resolver.ts
 import { ResolveField, Resolver, Parent } from '@nestjs/graphql';
 import { Loader } from '@dessly/nestjs-dataloader';
