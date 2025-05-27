@@ -23,7 +23,7 @@ import {
   YogaFederationDriver,
   YogaFederationDriverConfig,
 } from '@graphql-yoga/nestjs-federation';
-import { DataloaderModule } from '@dessly/nestjs-dataloader';
+import { DataloaderModule, DATALOADER_ENVELOP_PLUGIN } from '@dessly/nestjs-dataloader';
 
 @Module({
   imports: [
@@ -35,7 +35,7 @@ import { DataloaderModule } from '@dessly/nestjs-dataloader';
     GraphQLModule.forRootAsync<YogaFederationDriverConfig>({
       driver: YogaFederationDriver,
       imports: [DataloaderModule],
-      inject: ['DATALOADER_ENVELOP_PLUGIN'],
+      inject: [DATALOADER_ENVELOP_PLUGIN],
       useFactory: (dataloaderPlugin) => ({
         driver: YogaFederationDriver,
         autoSchemaFile: { federation: 2 },

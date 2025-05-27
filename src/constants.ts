@@ -12,3 +12,5 @@ export const GQL_CONTEXT_KEY = `${PACKAGE_NAMESPACE}:dataloaders`;
  * The metadata key that designates a class as a dataloader provider.
  */
 export const METADATA_KEY = `${PACKAGE_NAMESPACE}:dataloader-provider`;
+
+export const DATALOADER_ENVELOP_PLUGIN = 'DATALOADER_ENVELOP_PLUGIN';
