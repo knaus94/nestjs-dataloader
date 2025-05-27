@@ -1,110 +1,97 @@
-# GraphQL Dataloaders for NestJS
+# @dessly/nestjs-dataloader
 
-[![NPM Version](https://img.shields.io/npm/v/@dessly/nestjs-dataloader.svg)](https://www.npmjs.com/package/@dessly/nestjs-dataloader)
-[![Package License](https://img.shields.io/npm/l/@dessly/nestjs-dataloader.svg)](https://www.npmjs.com/package/@dessly/nestjs-dataloader)
-![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/@dessly/nestjs-dataloader)
-[![NPM Downloads](https://img.shields.io/npm/dm/@dessly/nestjs-dataloader.svg)](https://www.npmjs.com/package/@dessly/nestjs-dataloader)
-[![Lint Code Base](https://github.com/dessly/nestjs-dataloader/actions/workflows/super-linter.yml/badge.svg)](https://github.com/dessly/nestjs-dataloader/actions/workflows/super-linter.yml)
-[![Node.js CI](https://github.com/dessly/nestjs-dataloader/actions/workflows/ci.yml/badge.svg)](https://github.com/dessly/nestjs-dataloader/actions/workflows/ci.yml)
-[![Node.js Package](https://github.com/dessly/nestjs-dataloader/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/dessly/nestjs-dataloader/actions/workflows/npm-publish.yml)
-[![Maintainability](https://img.shields.io/codeclimate/maintainability/dessly/nestjs-dataloader)](https://codeclimate.com/github/dessly/nestjs-dataloader/maintainability)
-[![Test Coverage](https://img.shields.io/codeclimate/coverage/dessly/nestjs-dataloader)](https://codeclimate.com/github/dessly/nestjs-dataloader/test_coverage)
-[![Twitter](https://img.shields.io/twitter/follow/realEoinOBrien.svg?style=social&label=Follow)](https://twitter.com/realEoinOBrien)
+> 📦 Zero-config DataLoader integration for **NestJS 11 + GraphQL Yoga**
 
-## Description
-
-Quick and easy GraphQL [dataloaders](https://github.com/graphql/dataloader) for NestJS.
+---
 
 ## Installation
-
 ```bash
-$ npm install @dessly/nestjs-dataloader
+npm i @dessly/nestjs-dataloader
 ```
 
-## Usage
+## Quick Start
 
-Import the `DataloaderModule` in your root module.
+# 1. Connect the module
 
-```typescript
+```bash
+// core.module.ts
 import { Module } from '@nestjs/common';
-import { DataloaderModule } from '@dessly/nestjs-dataloader';
-import { ItemResolver } from './item.resolver';
-import { ItemLoader } from './item.loader';
+import {
+  GraphQLModule,
+} from '@nestjs/graphql';
+import {
+  YogaFederationDriver,
+  YogaFederationDriverConfig,
+} from '@graphql-yoga/nestjs-federation';
+import { DataloaderModule, DATALOADER_ENVELOP_PLUGIN } from '@dessly/nestjs-dataloader';
 
 @Module({
-  imports: [DataloaderModule],
-  providers: [ItemResolver, ItemLoader],
+  imports: [
+    /** ① add the global module */
+    DataloaderModule,
+
+    /** ② connect GraphQL via forRootAsync
+        and get the Envelop plugin from DI  */
+    GraphQLModule.forRootAsync<YogaFederationDriverConfig>({
+      driver: YogaFederationDriver,
+      imports: [DataloaderModule],
+      inject: [DATALOADER_ENVELOP_PLUGIN],
+      useFactory: (dataloaderPlugin) => ({
+        driver: YogaFederationDriver,
+        autoSchemaFile: { federation: 2 },
+        context: ({ req }) => ({ req }),
+        plugins: [dataloaderPlugin],          // ← DataLoader-plugin
+      }),
+    }),
+  ],
 })
-export class AppModule {}
+export class CoreModule {}
 ```
 
-Decorate dataloader factory classes with `@DataloaderProvider()` to automatically provide them to the GraphQL context object for each request.
+# 2. Define DataLoader
 
-```typescript
+```bash
+// author.loader.ts
 import DataLoader from 'dataloader';
 import { DataloaderProvider } from '@dessly/nestjs-dataloader';
+import { AuthorService } from './author.service';
+import { Author } from './author.entity';
 
 @DataloaderProvider()
-class ItemLoader {
-  createDataloader(ctx: GqlExecutionContext) {
-    // Fetch request-scoped context data if needed
-    const user = ctx.getContext().req.user;
-    // Replace this with your actual dataloader implementation
-    return new DataLoader<string, Item>(async (ids) => getItemsWithIds(user, ids));
+export class AuthorLoader {
+  constructor(private readonly svc: AuthorService) {}
+
+  /** helper: SELECT ... WHERE id IN (ids) and return in the correct order */
+  createDataloader(): DataLoader<number, Author | null> {
+    return new DataLoader(async (ids: readonly number[]) => {
+      const rows = await this.svc.findManyByIds(ids as number[]);
+      const map = new Map(rows.map((r) => [r.id, r]));
+      return ids.map((id) => map.get(id) ?? null);
+    });
   }
 }
 ```
 
-Use `@Loader(...)` to inject a dataloader instance into your resolver methods.
+# 3. Use in resolver
 
-```typescript
-import DataLoader from 'dataloader';
+```bash
+// book.resolver.ts
+import { ResolveField, Resolver, Parent } from '@nestjs/graphql';
 import { Loader } from '@dessly/nestjs-dataloader';
-import { ItemLoader } from './item.loader';
+import { AuthorLoader } from './author.loader';
+import DataLoader from 'dataloader';
+import { Book } from './book.entity';
+import { Author } from './author.entity';
 
-@Resolver()
-class ItemResolver {
-  @Query(() => Item, { name: 'item' })
-  getItem(@Args('id') id: string, @Loader(ItemLoader) itemLoader) {
-    return itemLoader.load(id);
+@Resolver(() => Book)
+export class BookResolver {
+  @ResolveField(() => Author, { name: 'author' })
+  author(
+    @Parent() book: Book,
+    @Loader(AuthorLoader) loader: DataLoader<number, Author | null>,
+  ) {
+    return loader.load(book.authorId);
   }
 }
 ```
 
-And that's it. Happy coding!
-
-## Development
-
-```bash
-# build
-$ npm run build
-
-# format with prettier
-$ npm run format
-
-# lint with eslint
-$ npm run lint
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Stay in touch
-
-- Author - [Eoin O'Brien](https://github.com/eoin-obrien)
-- Website - [https://tracworx.ai](https://tracworx.ai/)
-- Twitter - [@realEoinOBrien](https://twitter.com/realEoinOBrien)
-
-## License
-
-`@dessly/nestjs-dataloader` is [MIT licensed](LICENSE).
