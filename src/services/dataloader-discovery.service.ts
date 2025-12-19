@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/
 import type { InjectionToken } from '@nestjs/common/interfaces';
 import { DiscoveryService } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
-import DataLoader from 'dataloader';
+import type DataLoader from 'dataloader';
 import { METADATA_KEY } from '../constants';
 import { DataloaderFactory } from '../interfaces/dataloader-factory.interface';
 
@@ -22,12 +22,17 @@ export class DataloaderDiscoveryService implements OnModuleInit {
       ) as InstanceWrapper<DataloaderFactory>[];
   }
 
-  createDataloaderMap(graphqlCtx: Record<string, any>): DataloaderMap {
+  getProviders(): InstanceWrapper<DataloaderFactory>[] {
     if (!this.providers) {
       throw new InternalServerErrorException('DataloaderDiscoveryService is not initialised');
     }
+    return this.providers;
+  }
+
+  createDataloaderMap(graphqlCtx: Record<string, any>): DataloaderMap {
+    const providers = this.getProviders();
     return new Map(
-      this.providers.map((p) => [
+      providers.map((p) => [
         p.token,
         p.instance.createDataloader(graphqlCtx),
       ]),

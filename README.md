@@ -6,7 +6,7 @@
 
 ## Installation
 ```bash
-npm i @dessly/nestjs-dataloader
+npm i @dessly/nestjs-dataloader dataloader
 ```
 
 ## Quick Start
@@ -94,4 +94,3 @@ export class BookResolver {
   }
 }
 ```
-

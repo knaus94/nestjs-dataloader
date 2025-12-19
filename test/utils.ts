@@ -1,7 +1,7 @@
 import { ExecutionContext } from "@nestjs/common";
 import { InstanceToken } from "@nestjs/core/injector/module";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import DataLoader from "dataloader";
+import type DataLoader from "dataloader";
 import { GQL_CONTEXT_KEY } from "../src/constants";
 
 export const executionContextMockFactory = (

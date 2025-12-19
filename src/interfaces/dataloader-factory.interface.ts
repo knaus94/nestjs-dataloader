@@ -1,4 +1,4 @@
-import DataLoader from 'dataloader';
+import type DataLoader from 'dataloader';
 
 /**
  * Фабрика должна вернуть DataLoader.

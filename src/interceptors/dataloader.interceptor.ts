@@ -8,8 +8,8 @@ export class DataloaderInterceptor implements NestInterceptor {
   constructor(private readonly discovery: DataloaderDiscoveryService) {}
 
   intercept(ctx: ExecutionContext, next: CallHandler) {
-    const gqlCtx = GqlExecutionContext.create(ctx);
-    gqlCtx.getContext()[GQL_CONTEXT_KEY] = this.discovery.createDataloaderMap(gqlCtx);
+    const gqlContext = GqlExecutionContext.create(ctx).getContext<Record<string, any>>();
+    gqlContext[GQL_CONTEXT_KEY] = this.discovery.createDataloaderMap(gqlContext);
     return next.handle();
   }
 }
