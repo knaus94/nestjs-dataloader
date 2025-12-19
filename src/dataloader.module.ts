@@ -1,6 +1,5 @@
-// src/dataloader.module.ts
 import { Global, Module } from '@nestjs/common';
-import { ModuleRef, DiscoveryModule } from '@nestjs/core'; // ← добавили DiscoveryModule
+import { ModuleRef, DiscoveryModule } from '@nestjs/core'; 
 import { DataloaderDiscoveryService } from './services/dataloader-discovery.service';
 import { createDataloaderPlugin } from './plugins/dataloader.plugin';
 import { DATALOADER_ENVELOP_PLUGIN } from './constants';

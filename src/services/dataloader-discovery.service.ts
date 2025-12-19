@@ -1,10 +1,10 @@
 import { Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
 import type { InjectionToken } from '@nestjs/common/interfaces';
 import { DiscoveryService } from '@nestjs/core';
-import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
+import type { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import type DataLoader from 'dataloader';
 import { METADATA_KEY } from '../constants';
-import { DataloaderFactory } from '../interfaces/dataloader-factory.interface';
+import type { DataloaderFactory } from '../interfaces/dataloader-factory.interface';
 
 export type DataloaderMap = Map<InjectionToken, DataLoader<any, any>>;
 
